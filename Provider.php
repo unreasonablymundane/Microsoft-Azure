@@ -2,10 +2,11 @@
 
 namespace SocialiteProviders\Azure;
 
-use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 use SocialiteProviders\Manager\OAuth2\User;
+use Laravel\Socialite\Two\ProviderInterface;
+use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 
-class Provider extends AbstractProvider
+class Provider extends AbstractProvider implements ProviderInterface
 {
     /**
      * Unique Provider Identifier.
@@ -17,7 +18,7 @@ class Provider extends AbstractProvider
      *
      * @var string
      */
-    protected $graphUrl = 'https://graph.windows.net/myorganization/me';
+    protected $graphUrl = 'https://graph.microsoft.com/v1.0/me';
 
     /**
      * The Graph API version for the request.
@@ -61,11 +62,8 @@ class Provider extends AbstractProvider
     protected function getUserByToken($token)
     {
         $response = $this->getHttpClient()->get($this->graphUrl, [
-            'query' => [
-                'api-version' => $this->version,
-            ],
             'headers' => [
-                'Accept'        => 'application/json',
+                'Accept' => 'application/json',
                 'Authorization' => 'Bearer '.$token,
             ],
         ]);
@@ -79,7 +77,7 @@ class Provider extends AbstractProvider
     protected function mapUserToObject(array $user)
     {
         return (new User())->setRaw($user)->map([
-            'id'    => $user['objectId'], 'nickname' => null, 'name' => $user['displayName'],
+            'id' => $user['id'], 'nickname' => null, 'name' => $user['displayName'],
             'email' => $user['userPrincipalName'], 'avatar' => null,
         ]);
     }
@@ -91,7 +89,7 @@ class Provider extends AbstractProvider
     {
         return array_merge(parent::getTokenFields($code), [
             'grant_type' => 'authorization_code',
-            'resource'   => 'https://graph.windows.net',
+            'resource' => 'https://graph.microsoft.com',
         ]);
     }
 
