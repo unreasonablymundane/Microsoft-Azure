@@ -62,9 +62,6 @@ class Provider extends AbstractProvider
     protected function getUserByToken($token)
     {
         $response = $this->getHttpClient()->get($this->graphUrl, [
-            'query' => [
-                'api-version' => $this->version,
-            ],
             'headers' => [
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer '.$token,
